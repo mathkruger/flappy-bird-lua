@@ -16,7 +16,9 @@ Pipes = {
     topSpaceY = 0,
 
     bottomX = 0,
-    bottomSpaceY = 0
+    bottomSpaceY = 0,
+
+    speed = 60
 }
 
 function Pipes:create(o)
@@ -37,11 +39,13 @@ function Pipes:reset()
 
     self.bottomX = constants.windowWidth + ((constants.windowWidth + self.width) / 2)
     self.bottomSpaceY = newPipeSpaceY(self.spaceHeight)
+
+    self.speed = 60
 end
 
-function Pipes:update(dt)
+function Pipes:update(dt, gameController)
     local function moveIndividual(pipeX, pipeSpaceY)
-        pipeX = pipeX - (60 * dt)
+        pipeX = pipeX - (self.speed * dt)
 
         if (pipeX + self.width) < 0 then
             pipeX = constants.windowWidth
@@ -53,6 +57,10 @@ function Pipes:update(dt)
     
     self.topX, self.topSpaceY = moveIndividual(self.topX, self.topSpaceY)
     self.bottomX, self.bottomSpaceY = moveIndividual(self.bottomX, self.bottomSpaceY)
+
+    if gameController.score > 0 and gameController.score % 5 == 0 then
+        self.speed = self.speed + 0.3
+    end
 end
 
 function Pipes:draw()

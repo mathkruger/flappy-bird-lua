@@ -4,7 +4,13 @@ GameController = {
     playingAreaWidth = constants.windowWidth,
     playingAreaHeight = constants.windowHeight,
     score = 0,
-    upcomingPipe = 1
+    upcomingPipe = 1,
+    bgSpeed = 40,
+
+    bgX1 = 0,
+    bgX2 = constants.windowWidth,
+
+    scoreFont = love.graphics.newFont("res/font.ttf", 50)
 }
 
 function GameController:create(o)
@@ -15,6 +21,9 @@ function GameController:create(o)
     self.playingAreaWidth = o.playingAreaWidth or constants.windowWidth
     self.playingAreaHeight = o.playingAreaHeight or constants.windowHeight
     self.score = o.score or 0
+
+    self.scoreFont:setFilter("nearest")
+    love.graphics.setFont(self.scoreFont)
 
     return o
 end
@@ -46,12 +55,28 @@ function GameController:checkPlayerScored(bird, pipes)
     updateScoreAndClosestPipe(2, pipes.bottomX, pipes.width, 1)
 end
 
+function GameController:updateBGPosition(dt)
+    local function moveIndividual(xPos)
+        xPos = xPos - (self.bgSpeed * dt)
+
+        if (xPos + self.playingAreaWidth) < 0 then
+            xPos = constants.windowWidth
+        end
+
+        return xPos
+    end
+    
+    self.bgX1 = moveIndividual(self.bgX1)
+    self.bgX2 = moveIndividual(self.bgX2)
+end
+
 function GameController:drawGameField()
-    love.graphics.setColor(.14, .36, .46)
-    love.graphics.rectangle('fill', 0, 0, self.playingAreaWidth, self.playingAreaHeight)
+    local bg = love.graphics.newImage("res/bg.png")
+    love.graphics.draw(bg, self.bgX1, 0)
+    love.graphics.draw(bg, self.bgX2, 0)
 end
 
 function GameController:drawScore()
     love.graphics.setColor(1, 1, 1)
-    love.graphics.print(self.score, 15, 15)
+    love.graphics.print(self.score, self.playingAreaWidth / 2 - 25, 15)
 end

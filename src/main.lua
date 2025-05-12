@@ -7,27 +7,38 @@ function love.load()
     pipes = Pipes:create({})
     gameController = GameController:create({})
 
+    gameRunning = false
+
     function reset()
         bird:reset()
         pipes:reset()
         gameController:reset()
+        gameRunning = false
     end
 
     reset()
 end
 
 function love.update(dt)
-    bird:update(dt)
-    pipes:update(dt)
-
-    if gameController:playerDied(bird, pipes) then
-        reset()
+    gameController:updateBGPosition(dt)
+    
+    if gameRunning then
+        bird:update(dt)
+        pipes:update(dt, gameController)
+    
+        if gameController:playerDied(bird, pipes) then
+            reset()
+        end
+    
+        gameController:checkPlayerScored(bird, pipes)
     end
-
-    gameController:checkPlayerScored(bird, pipes)
 end
 
 function love.keypressed(key)
+    if gameRunning == false then
+        gameRunning = true
+    end
+
     bird:move()
 end
 

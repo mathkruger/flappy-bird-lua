@@ -3,7 +3,8 @@ Bird = {
     y = 200,
     width = 30,
     height = 25,
-    speed = 0
+    speed = 0,
+    sprite = love.graphics.newImage("res/bird.png")
 }
 
 function Bird:create(o)
@@ -16,6 +17,7 @@ function Bird:create(o)
     self.width = o.width or 30
     self.height = o.height or 25
     self.speed = o.speed or 0
+    self.sprite = o.sprite or love.graphics.newImage("res/bird.png")
 
     return o
 end
@@ -53,6 +55,8 @@ function Bird:move()
 end
 
 function Bird:draw()
-    love.graphics.setColor(.87, .84, .27)
-    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+    local width  = self.sprite:getWidth()
+	local height = self.sprite:getHeight()
+	local quad         = love.graphics.newQuad(0, 0, width, height, width, height)
+    love.graphics.draw(self.sprite, quad, self.x, self.y)
 end
