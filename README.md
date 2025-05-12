@@ -17,6 +17,9 @@ cd flappy-bird-lua
 # Builds the .love file and run it
 make run
 
-# Run the src folder
+# Runss the src folder
 make dev
+
+# Build and run the web version of the game
+make web
 ```
