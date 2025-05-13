@@ -8,9 +8,12 @@ GameController = {
     bgSpeed = 40,
 
     bgX1 = 0,
-    bgX2 = constants.windowWidth,
+    bgX2 = constants.windowWidth - 1,
 
-    scoreFont = love.graphics.newFont("res/font.ttf", 50)
+    scoreFont = love.graphics.newFont("res/font.ttf", 50),
+
+    scoreSound = love.audio.newSource("res/score.ogg", "static"),
+    bgMusic = love.audio.newSource("res/bgm.mp3", "stream")
 }
 
 function GameController:create(o)
@@ -24,6 +27,8 @@ function GameController:create(o)
 
     self.scoreFont:setFilter("nearest")
     love.graphics.setFont(self.scoreFont)
+
+    self.bgMusic:setVolume(0.5)
 
     return o
 end
@@ -50,6 +55,10 @@ end
 function GameController:checkPlayerScored(bird, pipes)
     local function updateScoreAndClosestPipe(thisPipe, pipeX, pipeWidth, otherPipe)
         if self.upcomingPipe == thisPipe and (bird.x > (pipeX + pipeWidth)) then
+            if not self.scoreSound:isPlaying() then
+                love.audio.play(self.scoreSound)
+            end
+
             self.score = self.score + 1
             self.upcomingPipe = otherPipe
         end
@@ -60,11 +69,15 @@ function GameController:checkPlayerScored(bird, pipes)
 end
 
 function GameController:updateBGPosition(dt)
+    if not self.bgMusic:isPlaying( ) then
+		love.audio.play( self.bgMusic )
+	end
+
     local function moveIndividual(xPos)
         xPos = xPos - (self.bgSpeed * dt)
 
-        if (xPos + self.playingAreaWidth) < 0 then
-            xPos = constants.windowWidth
+        if (xPos + self.playingAreaWidth - 1) < 0 then
+            xPos = self.playingAreaWidth - 1
         end
 
         return xPos
