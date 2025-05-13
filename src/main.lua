@@ -54,5 +54,11 @@ function love.draw()
     gameController:drawGameField()
     bird:draw()
     pipes:draw()
-    gameController:drawScore()
+
+    if gameRunning then
+        gameController:drawScore()
+    else
+        gameController:drawGameTitle()
+        gameController:drawMaxScore()
+    end
 end

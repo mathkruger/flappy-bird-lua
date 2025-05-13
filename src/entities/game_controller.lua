@@ -37,6 +37,10 @@ function GameController:playerDied(bird, pipes)
     if bird:isCollidingWithPipe(pipes.topX, pipes.topSpaceY, pipes.spaceHeight, pipes.width) or
         bird:isCollidingWithPipe(pipes.bottomX, pipes.bottomSpaceY, pipes.spaceHeight, pipes.width) or bird.y >
         self.playingAreaHeight then
+        local maxScore = self:loadMaxScore()
+        if maxScore < self.score then
+            self:saveMaxScore()
+        end
         return true
     end
 
@@ -70,6 +74,20 @@ function GameController:updateBGPosition(dt)
     self.bgX2 = moveIndividual(self.bgX2)
 end
 
+function GameController:saveMaxScore()
+    local serializedData = "return { maxScore = " .. self.score .. " }"
+    love.filesystem.write("savegame.txt", serializedData)
+end
+
+function GameController:loadMaxScore()
+    if not love.filesystem.getInfo("savegame.txt") then
+        self:saveMaxScore()
+        return self.score
+    end
+    local data = love.filesystem.load("savegame.txt")()
+    return data.maxScore
+end
+
 function GameController:drawGameField()
     local bg = love.graphics.newImage("res/bg.png")
     love.graphics.draw(bg, self.bgX1, 0)
@@ -78,5 +96,17 @@ end
 
 function GameController:drawScore()
     love.graphics.setColor(1, 1, 1)
+    local maxScore = self:loadMaxScore()
     love.graphics.print(self.score, self.playingAreaWidth / 2 - 25, 15)
+end
+
+function GameController:drawGameTitle()
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print("Bird", self.playingAreaWidth / 2 - 25, 15)
+end
+
+function GameController:drawMaxScore()
+    local maxScore = self:loadMaxScore()
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print("Max score " .. maxScore, 15, 45)
 end
