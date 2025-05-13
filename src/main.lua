@@ -21,25 +21,33 @@ end
 
 function love.update(dt)
     gameController:updateBGPosition(dt)
-    
+
     if gameRunning then
         bird:update(dt)
         pipes:update(dt, gameController)
-    
+
         if gameController:playerDied(bird, pipes) then
             reset()
         end
-    
+
         gameController:checkPlayerScored(bird, pipes)
     end
 end
 
-function love.keypressed(key)
+function handleGameStartAndPlayerMovement()
     if gameRunning == false then
         gameRunning = true
     end
 
     bird:move()
+end
+
+function love.keypressed(key)
+    handleGameStartAndPlayerMovement()
+end
+
+function love.mousepressed(x, y, button, istouch)
+    handleGameStartAndPlayerMovement()
 end
 
 function love.draw()
